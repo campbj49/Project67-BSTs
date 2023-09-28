@@ -166,23 +166,23 @@ class BinarySearchTree {
    * Return an array of visited nodes. */
 
   bfs() {
-    function _bfs(node){
-      let leftTree = {val:[],bfsBelow:[]};
-      let rightTree = {val:[],bfsBelow:[]};
-      //to construct bfsBelow it will first check if either the right or the left exist
-      //if it finds a branch it will collect the recursive data
-      if(node.left) leftTree = _bfs(node.left);
-      if(node.right) rightTree = _bfs(node.right);
-
-      //it will then collect the recusively found data and arrange it into a meaningful order
-      let bfsBelow = [...leftTree.val, ...rightTree.val, ...leftTree.bfsBelow, ...rightTree.bfsBelow];
-      
-      //this will return the node's value and the array of everything beneath it arranged in bfs
-      return {val:[node.val], bfsBelow:bfsBelow}
+    //traversing laterally is a bit more difficult than depth first
+    function _bfs(level){
+      //creates a new level from all the child nodes of the current level
+      let newLevel = []
+      let res = []
+      for(let parent of level){
+        res.push(parent.val);
+        if(parent.left) newLevel.push(parent.left);
+        if(parent.right) newLevel.push(parent.right);
+      }
+      //if the newLevel is empty, this is the bottom of the tree, so just return res
+      if(newLevel.length === 0) return res;
+      //otherwise fuse the current level with the all the levels below and send it
+      return [...res, ..._bfs(newLevel)];
     }
-    let finalTree = _bfs(this.root)
 
-    return [...finalTree.val, ...finalTree.bfsBelow];
+    return _bfs([this.root]);
   }
 
   /** Further Study!
